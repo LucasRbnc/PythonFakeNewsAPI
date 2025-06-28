@@ -1,40 +1,33 @@
-import os
 import pandas as pd
-import kagglehub
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 import joblib
 
-# Baixar e copiar os datasets
-data_dir = "data/raw"
-os.makedirs(data_dir, exist_ok=True)
+df = pd.read_csv("data/pre-processed.csv")
+df["label"] = df["label"].str.lower().str.strip()
+df = df.dropna(subset=["preprocessed_news", "label"])
+df = df[df["label"].isin(["fake", "true"])]
 
-path = kagglehub.dataset_download("clmentbisaillon/fake-and-real-news-dataset")
+# Mapeamento correto agora
+y = df["label"].map({"fake": 0, "true": 1})
+X = df["preprocessed_news"]
 
-# Carregar os dados
-fake = pd.read_csv(os.path.join(path, "Fake.csv"))
-true = pd.read_csv(os.path.join(path, "True.csv"))
+# Checagem final
+if X.empty or y.isnull().any():
+    raise ValueError("Erro: coluna 'label' ainda contém valores inválidos ou ausentes.")
 
-fake["label"] = "falsa"
-true["label"] = "verdadeira"
+# Treinamento
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-df = pd.concat([fake, true])
-df = df[["text", "label"]].dropna()
-
-# Treinar modelo
-X_train, X_test, y_train, y_test = train_test_split(df["text"], df["label"], test_size=0.2, random_state=42)
-
-model = Pipeline([
-    ("tfidf", TfidfVectorizer(stop_words="english", max_df=0.7)),
-    ("clf", MultinomialNB())
+pipeline = Pipeline([
+    ("tfidf", TfidfVectorizer(max_features=5000)),
+    ("clf", LogisticRegression())
 ])
 
-model.fit(X_train, y_train)
-
-print("Acurácia:", model.score(X_test, y_test))
+pipeline.fit(X_train, y_train)
 
 # Salvar modelo
-os.makedirs("models", exist_ok=True)
-joblib.dump(model, "models/modelo_fakenews.pkl")
+joblib.dump(pipeline, "app/model/modelo_noticias.joblib")
+print("✅ Modelo treinado e salvo com sucesso.")
