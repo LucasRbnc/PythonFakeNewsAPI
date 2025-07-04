@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Classificador de Fake News</title>
+  </head>
+ </head>
+<body>
+  <h1>🔍 Classificador de Fake News</h1>
+  <p>Cole uma notícia abaixo e descubra se ela é <em>falsa</em> ou <em>verdadeira</em>.</p>
+
+  <textarea id="noticia" placeholder="Digite a notícia aqui..."></textarea>
+
+  <div class="buttons">
+    <button onclick="classificarNoticia()">Classificar</button>
+    <button onclick="carregarHistorico()">Ver Histórico</button>
+  </div>
+
+  <div id="resultado" class="card resultado"></div>
+  <div id="historico" class="card resultado"></div>
+
+  <script>
+    const API_BASE = "http://localhost:8000/api";
+
+    async function classificarNoticia() {
+      const texto = document.getElementById("noticia").value;
+      const res = await fetch(`${API_BASE}/classificar-noticia`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texto })
+      });
+      const data = await res.json();
+
+      const classeStyle = data.classe === "falsa" ? "classe-falsa" : "classe-verdadeira";
+
+      document.getElementById("resultado").innerHTML = `
+        <h3>Resultado da Classificação</h3>
+        <strong>Classe:</strong> <span class="${classeStyle}">${data.classe}</span>
+        <strong>Probabilidade:</strong> ${(data.probabilidade * 100).toFixed(2)}%
+        <strong>Palavras Influentes:</strong> ${
+          data.palavras_influentes.length > 0
+            ? data.palavras_influentes.join(", ")
+            : "Nenhuma palavra identificada."
+        }
+      `;
+    }
+
+    async function carregarHistorico() {
+      const res = await fetch(`${API_BASE}/historico`);
+      const data = await res.json();
+
+      document.getElementById("historico").innerHTML = `
+        <h3>Histórico de Classificações</h3>
+        <ul style="padding-left: 1rem;">
+          ${data.map(item => `
+            <li style="margin-bottom: 0.8rem;">
+              <strong>${item.classe.toUpperCase()} (${(item.probabilidade * 100).toFixed(1)}%)</strong><br/>
+              <em>${item.texto}</em>
+            </li>
+          `).join("")}
+        </ul>
+      `;
+    }
+  </script>
+</body>
+</html>

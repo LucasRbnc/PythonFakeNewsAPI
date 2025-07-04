@@ -1,0 +1,89 @@
+:root {
+      --bg: #f9f9f9;
+      --primary: #2e3440;
+      --secondary: #4c566a;
+      --accent: #88c0d0;
+      --success: #a3be8c;
+      --danger: #bf616a;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--primary);
+      margin: 0;
+      padding: 2rem;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    h1 {
+      color: var(--primary);
+      text-align: center;
+      font-size: 2rem;
+    }
+
+    textarea {
+      width: 100%;
+      height: 160px;
+      font-size: 1rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      resize: none;
+      background: white;
+    }
+
+    .buttons {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      background-color: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    button:hover {
+      background-color: #5e81ac;
+    }
+
+    .card {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .resultado strong {
+      display: block;
+      margin-top: 0.5rem;
+      color: var(--secondary);
+    }
+
+    .classe-falsa {
+      color: var(--danger);
+      font-weight: bold;
+    }
+
+    .classe-verdadeira {
+      color: var(--success);
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem;
+      }
+    }
